@@ -29,7 +29,7 @@ use List::Util qw(shuffle);
 
 $VERSION = '0.22';
 %IRSSI = (
-	authors		=> 'Juhani Karppinen',
+	authors		=> 'Juhani Karppinen', 'Topi Salmela',
 	contact		=> 'jcara',
 	name		=> 'Guess the color',
 	description	=> 'A game where a player guesses the colour of the next card.',
@@ -232,6 +232,19 @@ sub message_public {
 				send_message($server, $nick, $msg_str, $channel);
 			}
 		}
+        elsif (/^(!rb |\.)/i) {
+            my @in = split / /, $msg;
+            my $input_size = scalar @in;
+
+            if($input_size == 0){
+                return 0;
+            }
+            $sth = $dbh->prepare("SELECT name, score FROM players WHERE name = '".$in."'");
+            my @my_result = $sth->execute();
+            if(@my_result != null) {
+                send_message($server, $in, $channel);
+            }
+        }
 	}
 }
 
