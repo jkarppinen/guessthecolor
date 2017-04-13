@@ -11,6 +11,8 @@
 # .top3		Prints out top 3 players with high scores.
 # .red		Player guesses a red card (heart or diamond).
 # .black	Player guesses a black card (spade or club).
+# .score  Returns high score of message sender.
+# .score <nick> Returns high score of a nickname.
 #
 # Alternatively use legacy !rb prefix:
 # !rb top3	Prints out top 3 players with high scores.
@@ -29,17 +31,17 @@ use List::Util qw(shuffle);
 
 $VERSION = '0.22';
 %IRSSI = (
-	authors		=> 'Juhani Karppinen',
-	contact		=> 'jcara',
-	name		=> 'Guess the color',
-	description	=> 'A game where a player guesses the colour of the next card.',
-	license		=> 'GPLv3 or later',
+authors		=> 'Juhani Karppinen',
+contact		=> 'jcara',
+name		=> 'Guess the color',
+description	=> 'A game where a player guesses the colour of the next card.',
+license		=> 'GPLv3 or later',
 );
 
 my @deck_full = ("Ac", "2c", "3c", "4c", "5c", "6c", "7c", "8c", "9c", "Tc", "Jc", "Qc", "Kc",
-	"Ad", "2d", "3d", "4d", "5d", "6d", "7d", "8d", "9d", "Td", "Jd", "Qd", "Kd",
-	"As", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "Ts", "Js", "Qs", "Ks",
-	"Ah", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "Th", "Jh", "Qh", "Kh",
+"Ad", "2d", "3d", "4d", "5d", "6d", "7d", "8d", "9d", "Td", "Jd", "Qd", "Kd",
+"As", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "Ts", "Js", "Qs", "Ks",
+"Ah", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "Th", "Jh", "Qh", "Kh",
 );
 
 # Connect to database
@@ -73,12 +75,12 @@ sub right_guess {
 
 sub red_or_black_filter {
 	if (	$_[0] eq 'red' ||
-		$_[0] eq '.red'
+	$_[0] eq '.red'
 	) {
 		return 'red';
 	}
 	elsif (	$_[0] eq 'black' ||
-		$_[0] eq '.black') {
+	$_[0] eq '.black') {
 		return 'black';
 	}
 	else { return 'invalid'; }
@@ -232,8 +234,25 @@ sub message_public {
 				send_message($server, $nick, $msg_str, $channel);
 			}
 		}
+		elsif (/^\.score/i) {
+			my @in = split / /, $msg;
+			my $input_size = scalar @in;
+			my $requested_nick;
+			if($input_size > 1){
+				$requested_nick = $in[1];
+			}
+			else {
+				$requested_nick = $nick;
+			}
+			my @my_result =  $dbh->selectrow_array("SELECT name, score FROM players WHERE name = '".$requested_nick."' COLLATE NOCASE");
+			if(@my_result) {
+				my $output_str = "$nick: High score of $my_result[0]: $my_result[1]";
+				send_message($server, $nick, $output_str, $channel);
+			}
+		}
 	}
 }
+
 
 signal_add("message public", "message_public");
 signal_add("message private", "message_public");
