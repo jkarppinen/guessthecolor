@@ -11,8 +11,8 @@
 # .top3		Prints out top 3 players with high scores.
 # .red		Player guesses a red card (heart or diamond).
 # .black	Player guesses a black card (spade or club).
-# .score  Returns high score of message sender.
-# .score <nick> Returns high score of a nickname.
+# .score	Returns high score of message sender.
+# .score <nick>	Returns high score of a nickname.
 #
 # Alternatively use legacy !rb prefix:
 # !rb top3	Prints out top 3 players with high scores.
