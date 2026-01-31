@@ -107,14 +107,14 @@ sub message_public {
 	my ($server, $msg, $nick, $target, $channel) = @_;
 	my @channel_whitelist = ('#channel1', '#channel2');
 
-	my $_ = $msg;
+	local $_ = $msg;
 	my $sth;
 	my @shuffled_deck;
 	my $rand_card;
 	my @deck;
 	my @result;
 
-	if (($channel ~~ @channel_whitelist)
+	if ((grep { $_ eq $channel } @channel_whitelist)
 	|| $channel eq ""
 	) {
 		if (/^(!rb |\.)top3/i) {
